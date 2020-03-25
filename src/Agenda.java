@@ -35,6 +35,7 @@ public class Agenda {
         this.notifyAll();
     }
 
+    @Override
     public String toString(){
         return " added to "+this.tag;
 

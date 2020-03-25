@@ -1,0 +1,6 @@
+TODO:1. All the knights initially appear outside of the GH.
+TODO:2. Neither of knighs initally has a Quest.
+TODO:3. KA initially located outside of GH. New Agenda is empty. Complete Agenda is empty.
+
+
+TODO: 目前完成了Agenda的导入和导出。 下一步的目标是完成对于Knight， KA的行为分析并实现相应的代码。
