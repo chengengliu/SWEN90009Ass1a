@@ -12,7 +12,7 @@ public class KingArthur extends Thread{
         // King Arthur's movement is not disturbed by any one.
         while(!isInterrupted()){
             try{
-                // Fistly wait
+                // Firstly wait 0.8s
                 sleep(Params.MEAN_KING_WAITING_TIME);
                 // King Arthur enters the hall
                 this.greatHall.kingArrive(this.toString());
