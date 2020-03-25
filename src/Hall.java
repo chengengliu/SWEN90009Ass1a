@@ -8,4 +8,24 @@ public class Hall {
         this.agendaComplete = agendaComplete;
         this.agendaNew = agendaNew;
     }
+
+    synchronized void arrive(Knight knight) throws InterruptedException{
+
+    }
+
+    synchronized void arrive(KingArthur kingArthur)throws InterruptedException{
+
+    }
+
+    synchronized void leave(Knight knight)throws InterruptedException{
+
+    }
+
+    synchronized void leave(KingArthur kingArthur) throws InterruptedException{
+
+    }
+
+    synchronized void startMeeting() throws InterruptedException{
+
+    }
 }

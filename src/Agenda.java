@@ -5,22 +5,41 @@
  */
 public class Agenda {
 
-    private Quest quest = null;
+    private Quest quest;
     private String tag = null;
 
     public Agenda(String tag){
         this.tag = tag;
+        this.quest = null;
     }
 
-    synchronized void addNew(Quest quest){
+//    添加新的Quest from producer
+    synchronized void addNew(Quest quest) throws InterruptedException{
+        // Wait until there is on quest coming in, from the producer.
+        while(this.quest!=null){
+            this.wait();
+        }
+        this.quest = quest;
+        System.out.println(this.quest.toString() + this.toString());
+        this.notifyAll();
+    }
+//  移除已经完成的Quest
+    synchronized void removeComplete() throws InterruptedException{
+        // If current agenda holds non, wait until it has one to be removed.
+        while(this.quest==null){
+            this.wait();
+        }
+        Quest questTemp = this.quest;
+        this.quest = null;
+        System.out.println(questTemp.toString()+ this.toString());
+        this.notifyAll();
+    }
+
+    public String toString(){
+        return " added to "+this.tag;
 
     }
 
-    synchronized void removeComplete(){
-
-    }
-
-    synchronized void
 
 
 
