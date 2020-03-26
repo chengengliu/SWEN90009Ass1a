@@ -1,8 +1,12 @@
 TODO:1. All the knights initially appear outside of the GH.
-TODO:2. Neither of knighs initally has a Quest.
-TODO:3. KA initially located outside of GH. New Agenda is empty. Complete Agenda is empty.
+    2. Neither of knighs initally has a Quest.
+    3. KA initially located outside of GH. New Agenda is empty. Complete Agenda is empty.
 
 
-TODO: 目前完成了Agenda的导入和导出。 下一步的目标是完成对于Knight， KA的行为分析并实现相应的代码。
+TODO:
+    目前完成了Agenda的导入和导出。 下一步的目标是完成对于Knight，
+    KA的行为分析并实现相应的代码。
 
-TODO: The general process of a knight that should take is : Enter GH, Sit at RT, Release Q, Acquire Q, Stand from RT, exit GH, Set off to complete Q, Complete Q, repeat the process.
+TODO: The general process of a knight that should take is :
+    Enter GH, Sit at RT, Release Q, Acquire Q, Stand from RT,
+    exit GH, Set off to complete Q, Complete Q, repeat the process.

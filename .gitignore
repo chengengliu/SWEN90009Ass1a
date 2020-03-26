@@ -6,3 +6,4 @@
 */output
 *.output
 *.DS_Store
+/out

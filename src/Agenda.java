@@ -15,7 +15,7 @@ public class Agenda {
 
 //    添加新的Quest from producer
     synchronized void addNew(Quest quest) throws InterruptedException{
-        // Wait until there is on quest coming in, from the producer.
+        // Wait until there is one quest coming in, from the producer.
         while(this.quest!=null){
             this.wait();
         }
@@ -34,8 +34,31 @@ public class Agenda {
         System.out.println(questTemp.toString()+ this.toString());
         this.notifyAll();
     }
+//  Knight release quest.
+    synchronized void questRelease(Knight knight, Quest quest) throws InterruptedException{
+//        When the agenda is holding a quest, wait.
+        while(this.quest!=null){
+            this.wait();
+        }
 
+        this.quest = quest;
 
+        System.out.println(knight.toString()+" releases "+quest.toString());
+        this.notifyAll();
+    }
+
+    synchronized Quest questAcquire(Knight knight) throws InterruptedException {
+//        When the agenda is not holding any quest(no quest available), let the knight wait.
+        while(this.quest==null){
+            this.wait();
+        }
+        Quest quest = this.quest;
+        this.quest = null;
+        System.out.println(knight.toString() + " acquires "+quest.toString());
+        this.notifyAll();
+
+        return quest;
+    }
 
     @Override
     public String toString(){
