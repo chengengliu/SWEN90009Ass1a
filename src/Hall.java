@@ -9,7 +9,6 @@ public class Hall {
     private volatile boolean isMeetingStart;
     private volatile int knightsInHall;
     private volatile int knightsSitTable;
-//    private RoundTable roundTable;
 
     public Hall(String tag, Agenda agendaNew, Agenda agendaComplete){
         this.tag = tag;
@@ -21,7 +20,6 @@ public class Hall {
         this.knightsSitTable = 0;
 
         this.isMeetingStart = false;
-//        this.roundTable = new RoundTable();
     }
     synchronized void duringMeeting(){
         while(!this.isMeetingStart){
@@ -56,7 +54,7 @@ public class Hall {
     }
 
 //    When king is inside the hall, no kinght can enter or leaves the hall.
-    synchronized void knightLeave(String name){
+    synchronized void knightLeave(Knight knight){
         while(isKingInside()){
             try{
                 wait();
@@ -64,7 +62,7 @@ public class Hall {
                 e.printStackTrace();
             }
         }
-        System.out.println(name+" exits from"+this.toString());
+        System.out.println(knight.toString()+" exits from"+this.toString());
         this.knightsInHall--;
         this.notifyAll();
     }
@@ -91,14 +89,14 @@ public class Hall {
 //    From the spec:
 //    Having entered the GH, a Knight cannot leave without having acquired a new Quest.
 //    Having entered the GH, a Knight cannot leave without sitting at the Round Table.
-    synchronized void knightSit(String name){
-        System.out.println(name + " sits at the Round Table");
+    synchronized void knightSit(Knight knight){
+        System.out.println(knight.toString() + " sits at the Round Table");
         this.knightsSitTable++;
         this.notifyAll();
     }
 
-    synchronized void knightStandup(String name){
-        System.out.println(name+" stands from the Round Table");
+    synchronized void knightStandup(Knight knight){
+        System.out.println(knight.toString()+" stands from the Round Table");
         this.knightsSitTable--;
         this.notifyAll();
     }
@@ -154,8 +152,5 @@ public class Hall {
 
     public boolean isKingInside() {
         return kingInside;
-    }
-    public boolean isMeetingStart(){
-        return this.isMeetingStart;
     }
 }

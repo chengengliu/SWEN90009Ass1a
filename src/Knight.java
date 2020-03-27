@@ -30,7 +30,7 @@ public class Knight extends Thread{
 //                Knight sits at the round table, after the mingling time. (as specified in the spec?)
 //                sleep(Params.getMinglingTime());
 
-                this.greatHall.knightSit(this.toString());
+                this.greatHall.knightSit(this);
 //                Knights may discuss about some quests, after they sitting down. Notice that the meeting not start yet.
                 sleep(Params.getMinglingTime());
 //                Knights could only acquire and release a quest during the meeting.
@@ -43,12 +43,12 @@ public class Knight extends Thread{
                 this.quest =agendaNew.questAcquire(this);
 
 //                Stand up from the round table.
-                this.greatHall.knightStandup(this.toString());
+                this.greatHall.knightStandup(this);
 //                After standing up from the round table, the knights have some discussions.
                 sleep(Params.getMinglingTime());
 
 //                Knight leaves the Great Hall
-                this.greatHall.knightLeave(this.toString());
+                this.greatHall.knightLeave(this);
                 sleep(Params.getMinglingTime());
 
 //                Knight set off and trying to finish quest.
