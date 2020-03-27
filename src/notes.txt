@@ -3,10 +3,13 @@ TODO:1. All the knights initially appear outside of the GH.
     3. KA initially located outside of GH. New Agenda is empty. Complete Agenda is empty.
 
 
-TODO:
     目前完成了Agenda的导入和导出。 下一步的目标是完成对于Knight，
     KA的行为分析并实现相应的代码。
 
 TODO: The general process of a knight that should take is :
     Enter GH, Sit at RT, Release Q, Acquire Q, Stand from RT,
     exit GH, Set off to complete Q, Complete Q, repeat the process.
+
+TODO:
+    目前关于何时会议开始还有问题。 应该是做一个countr计数进入GH的人数和坐下的人数？
+    而且还有一个问题之前忘记: King 只有开完会才会离开GH。

@@ -6,33 +6,67 @@ public class Hall {
     private Agenda agendaComplete;
     private String tag;
     private volatile boolean kingInside;
+    private volatile boolean isMeetingStart;
     private volatile int knightsInHall;
+    private volatile int knightsSitTable;
 //    private RoundTable roundTable;
 
     public Hall(String tag, Agenda agendaNew, Agenda agendaComplete){
         this.tag = tag;
         this.agendaComplete = agendaComplete;
         this.agendaNew = agendaNew;
+
         this.kingInside = false;
         this.knightsInHall = 0;
+        this.knightsSitTable = 0;
+
+        this.isMeetingStart = false;
 //        this.roundTable = new RoundTable();
+    }
+    synchronized void duringMeeting(){
+        while(!this.isMeetingStart){
+            try{
+                wait();
+            }catch (InterruptedException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    synchronized Quest questAcquire(Knight knight) throws InterruptedException{
+        Quest quest = agendaNew.questAcquire(knight);
+        notifyAll();
+        return quest;
+    }
+
+    synchronized void questRelease(Knight knight, Quest quest) throws InterruptedException{
+        agendaComplete.questRelease(knight, quest);
+        notifyAll();
     }
 
     synchronized void kingArrive(String name) {
         this.kingInside = true;
-        System.out.println(name+"enters"+this.toString());
+        System.out.println(name+"enters the"+this.toString());
         this.notifyAll();
     }
 
 
-    synchronized void kingLeaves(String name){
+    synchronized void kingLeave(String name, KingArthur kingArthur){
+        while(kingArthur.inMeeting()){
+            try{
+                wait();
+            }catch (InterruptedException e){
+                e.printStackTrace();
+            }
+        }
+        kingArthur.setInsdeHall(false);
         this.kingInside = false;
-        System.out.println(name+"exists"+this.toString());
+        System.out.println(name+"exits the"+this.toString());
         this.notifyAll();
     }
 
 //    When king is inside the hall, no kinght can enter or leaves the hall.
-    synchronized void knightLeaves(String name){
+    synchronized void knightLeave(String name){
         while(isKingInside()){
             try{
                 wait();
@@ -40,12 +74,12 @@ public class Hall {
                 e.printStackTrace();
             }
         }
-        System.out.println(name+" exits"+this.toString());
+        System.out.println(name+" exits from"+this.toString());
         this.knightsInHall--;
         this.notifyAll();
     }
 //  这里的判断条件是： 当king在场时不能离开GH了
-    synchronized void knightEnters(String name){
+    synchronized void knightEnter(String name){
 //        注意 当king在hall里面的时候 你已经无法进入了，必须等待。
         while(isKingInside()){
             try{
@@ -64,29 +98,47 @@ public class Hall {
 //    From the spec:
 //    Having entered the GH, a Knight cannot leave without having acquired a new Quest.
 //    Having entered the GH, a Knight cannot leave without sitting at the Round Table.
-    synchronized void knighSit(String name){
+    synchronized void knightSit(String name){
         System.out.println(name + " sits at the Round Table");
+        this.knightsSitTable++;
         this.notifyAll();
     }
 
     synchronized void knightStandup(String name){
         System.out.println(name+" stands from the Round Table");
+        this.knightsSitTable--;
         this.notifyAll();
     }
 
-//      这一部分的代码应该放在？？交给Agenda来处理是不是更合理一些？如果给Hall来的话，是不是
-//    Knight与Hall的interaction就有点太多了？
+    synchronized void meetingStart(){
+        while(this.knightsSitTable != this.knightsInHall || !kingInside){
+            try{
+                wait();
+            }catch (InterruptedException e){
+                e.printStackTrace();
+            }
+        }
+        this.isMeetingStart = true;
+        System.out.println("Meeting begins!");
+        notifyAll();
+    }
 
-//    synchronized void knightReleaseQuest(String name, Knight knight){
-//        while(!knight.isQuestFinished()){
-//            try{
-//                wait();
-//            }catch (InterruptedException e){
-//                e.printStackTrace();
-//            }
-//        }
-//
-//    }
+    synchronized void meetingEnd(){
+        while(this.knightsSitTable!=0 || !kingInside){
+            try{
+                wait();
+            }catch (InterruptedException e){
+                e.printStackTrace();
+            }
+        }
+        this.isMeetingStart = false;
+        System.out.println("Meeting ends!");
+        notifyAll();
+    }
+
+    synchronized void setOffQuest(Knight knight){
+
+    }
 
     @Override
     public String toString(){
@@ -95,5 +147,8 @@ public class Hall {
 
     public boolean isKingInside() {
         return kingInside;
+    }
+    public boolean isMeetingStart(){
+        return this.isMeetingStart;
     }
 }

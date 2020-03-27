@@ -1,9 +1,12 @@
 public class KingArthur extends Thread{
     private Hall greatHall;
-    private boolean insideHall = false;
+    private boolean insideHall;
+    private boolean inMeeting;
 
     public KingArthur(Hall greatHall){
         this.greatHall = greatHall;
+        this.insideHall = false;
+        this.inMeeting = false;
     }
 
 
@@ -13,13 +16,17 @@ public class KingArthur extends Thread{
         while(!isInterrupted()){
             try{
                 // Firstly wait 0.8s
-                sleep(Params.MEAN_KING_WAITING_TIME);
+//                sleep(Params.getKingWaitingTime());
                 // King Arthur enters the hall
                 this.greatHall.kingArrive(this.toString());
+
+                this.greatHall.meetingStart();
+//                sleep(Params.getKingWaitingTime());
+                this.greatHall.meetingEnd();
                 // Waiting time for conference
-                sleep(Params.getKingWaitingTime());
                 // Exits the hall.
-                this.greatHall.kingLeaves(this.toString());
+                this.greatHall.kingLeave(this.toString(),this);
+                sleep(Params.getKingWaitingTime());
             }catch (InterruptedException e){
                 e.printStackTrace();
                 interrupt();
@@ -31,9 +38,19 @@ public class KingArthur extends Thread{
     public String toString(){
         return "King Arthur ";
     }
-//    public void setInsdeHall(boolean insideHall){
-//        this.insideHall = insideHall;
-//    }
+    public void setInsdeHall(boolean insideHall){
+        this.insideHall = insideHall;
+    }
 
+    public boolean isideHall() {
+        return insideHall;
+    }
 
+    public void setInMeeting(boolean inMeeting){
+        this.inMeeting = inMeeting;
+    }
+
+    public boolean inMeeting() {
+        return inMeeting;
+    }
 }

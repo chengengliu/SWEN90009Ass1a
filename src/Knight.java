@@ -15,6 +15,7 @@ public class Knight extends Thread{
         this.agendaNew = agendaNew;
         this.agendaComplete = agendaComplete;
         this.greatHall = greatHall;
+
         this.questFinished = false;
         this.quest = null;
     }
@@ -22,25 +23,36 @@ public class Knight extends Thread{
     public void run(){
         while(!isInterrupted()){
             try{
-                sleep(Params.getMinglingTime());
+//                Not too sure if this time should be placed here?
+//                sleep(Params.getMinglingTime());
 //                Knight enters GH
-                this.greatHall.knightEnters(this.toString());
-//                Knight sits at the round table.
-                this.greatHall.knighSit(this.toString());
+                this.greatHall.knightEnter(this.toString());
+//                Knight sits at the round table, after the mingling time. (as specified in the spec?)
+//                sleep(Params.getMinglingTime());
+
+                this.greatHall.knightSit(this.toString());
+//                Knights may discuss about some quests, after they sitting down. Notice that the meeting not start yet.
+                sleep(Params.getMinglingTime());
+//                Knights could only acquire and release a quest during the meeting.
+                this.greatHall.duringMeeting();
+
 //                Knight release quest(if they have finished any).
+                this.greatHall.questRelease(this, this.quest);
+//                Acquire new quest. Make sure that it is now in the meeting.
+//                this.greatHall.duringMeeting();
+                this.greatHall.questAcquire(this);
 
-                this.quest = this.agendaNew.questAcquire(this);
-
-//              TODO:Not too sure if this sleep() time is used correctly.
-//                  sleep(Params.getQuestingTime());
-
+//                Stand up from the round table.
                 this.greatHall.knightStandup(this.toString());
+//                After standing up from the round table, the knights have some discussions.
+                sleep(Params.getMinglingTime());
 
-                this.greatHall.knightLeaves(this.toString());
+//                Knight leaves the Great Hall
+                this.greatHall.knightLeave(this.toString());
+                sleep(Params.getMinglingTime());
+//                During this period, quest has finished.
 
-                sleep(Params.getQuestingTime());
-
-                this.agendaComplete.questRelease(this, this.quest);
+//                Knight set off and trying to finish quest.
 
             }catch (InterruptedException e){
                 e.printStackTrace();
