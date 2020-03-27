@@ -1,6 +1,7 @@
 /**
+ * Name: Chengeng Liu   Student ID: 813174
  * A quest, with a unique id, to be assigned to a knight for completion
- * 
+ *
  * @author ngeard@unimelb.edu.au
  *
  */

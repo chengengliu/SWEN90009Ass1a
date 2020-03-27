@@ -1,4 +1,6 @@
 /**
+ * Name: Chengeng Liu   Student ID: 813174
+ *
  * The top-level component of the questing knights simulator.
  *
  * It is responsible for:

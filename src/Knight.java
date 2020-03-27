@@ -1,14 +1,17 @@
+/**
+ * This class simulates a series of actions that a Knight performs. It encapsulates the data and Multiple threads
+ * represent multiple Knights. The Knight keeps three monitors and interact with the monitors.
+ *
+ * @Author: Chengeng Liu
+ * @StudntID: 813174
+ */
 public class Knight extends Thread{
     private int id;
     private Agenda agendaNew;
     private Agenda agendaComplete;
     private Hall greatHall;
 
-    private volatile boolean questFinished;
     Quest quest;
-
-//    private boolean standing = true;
-//    private boolean insideHall = false;
 
     public Knight(int id, Agenda agendaNew, Agenda agendaComplete, Hall greatHall){
         this.id = id;
@@ -16,48 +19,41 @@ public class Knight extends Thread{
         this.agendaComplete = agendaComplete;
         this.greatHall = greatHall;
 
-        this.questFinished = false;
         this.quest = null;
     }
+
+    /**
+     * Simulate a series of actions that a Knight will do.
+     * Enter GH, Sit at RT, Release Q, Acquire Q, Stand from RT,
+     *     exit GH, Set off to complete Q, Complete Q, repeat the process.
+     * Mingling Time is added before the meeting starts(before Knight sits down)
+     *  and the meeting ends(after Knight stands up).
+     */
     @Override
     public void run(){
         while(!isInterrupted()){
             try{
-//                Not too sure if this time should be placed here?
-//                sleep(Params.getMinglingTime());
-//                Knight enters GH
                 this.greatHall.knightEnter(this);
-//                Knight sits at the round table, after the mingling time. (as specified in the spec?)
-//                sleep(Params.getMinglingTime());
+
+//                Knights may discuss about some quests, before they sit down. Notice that the meeting not start yet.
+                sleep(Params.getMinglingTime());
 
                 this.greatHall.knightSit(this);
-//                Knights may discuss about some quests, after they sitting down. Notice that the meeting not start yet.
-                sleep(Params.getMinglingTime());
 //                Knights could only acquire and release a quest during the meeting.
                 this.greatHall.duringMeeting();
 
-//                Knight release quest(if they have finished any).
                 agendaComplete.questRelease(this, this.quest);
-//                Acquire new quest. Make sure that it is now in the meeting.
-//                this.greatHall.duringMeeting();
                 this.quest =agendaNew.questAcquire(this);
 
-//                Stand up from the round table.
                 this.greatHall.knightStandup(this);
 //                After standing up from the round table, the knights have some discussions.
                 sleep(Params.getMinglingTime());
 
-//                Knight leaves the Great Hall
                 this.greatHall.knightLeave(this);
-                sleep(Params.getMinglingTime());
 
-//                Knight set off and trying to finish quest.
-                this.greatHall.setOffQuest(this, quest);
-//                It took time for the knight to complete the quest.
+                this.greatHall.setOffQuest(this);
                 sleep(Params.getQuestingTime());
-//                Finally the quest has been finished
-                this.greatHall.questFinished(this, quest);
-
+                this.greatHall.questFinished(this, this.quest);
             }catch (InterruptedException e){
                 e.printStackTrace();
                 interrupt();
@@ -69,9 +65,5 @@ public class Knight extends Thread{
     @Override
     public String toString(){
         return "Knight "+this.id;
-    }
-
-    public boolean isQuestFinished() {
-        return questFinished;
     }
 }

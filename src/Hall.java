@@ -1,6 +1,16 @@
-import com.sun.org.apache.xalan.internal.xsltc.runtime.InternalRuntimeError;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
-
+/**
+ * This class acts as a monitor, holding the interaction with Knight, KingArthur.
+ * The communication such as when KingArthur has arrived in the Great Hall, will be
+ * sent through this class and monitored by the class, so that other threads of Knight
+ * will be notified.
+ *
+ * Several rules to keep in mind:
+ * Having entered the GH, a Knight cannot leave without having acquired a new Quest.
+ * Having entered the GH, a Knight cannot leave without sitting at the Round Table.
+ *
+ * @Author: Chengeng Liu
+ * @StudentID: 813174
+ */
 public class Hall {
     private Agenda agendaNew;
     private Agenda agendaComplete;
@@ -21,39 +31,39 @@ public class Hall {
 
         this.isMeetingStart = false;
     }
-    synchronized void duringMeeting(){
-        while(!this.isMeetingStart){
-            try{
-                wait();
-            }catch (InterruptedException e){
-                e.printStackTrace();
-            }
-        }
-    }
 
-
-    synchronized void kingArrive(String name) {
+    /**
+     * Change the flag showing that the KingArthur has arrived in the Great Hall.
+     * From this point, no Knight can leave or enter the Great Hall.
+     * @param kingArthur
+     */
+    synchronized void kingArrive(KingArthur kingArthur) {
         this.kingInside = true;
-        System.out.println(name+"enters the"+this.toString());
+        System.out.println(kingArthur+"enters the"+this.toString());
         this.notifyAll();
     }
 
-
-    synchronized void kingLeave(String name, KingArthur kingArthur){
-        while(kingArthur.inMeeting()){
+    /**
+     * King Arthur leaves the Great Hall. He will only leave the Great Hall if the meeting ends.
+     * @param kingArthur King Arthur
+     */
+    synchronized void kingLeave(KingArthur kingArthur){
+        while(this.isMeetingStart){
             try{
                 wait();
             }catch (InterruptedException e){
                 e.printStackTrace();
             }
         }
-        kingArthur.setInsdeHall(false);
         this.kingInside = false;
-        System.out.println(name+"exits the"+this.toString());
+        System.out.println(kingArthur.toString()+"exits the"+this.toString());
         this.notifyAll();
     }
 
-//    When king is inside the hall, no kinght can enter or leaves the hall.
+    /**
+     * A Knight may leave the Great Hall if the King Arthur is not inside the Great Hall.
+     * @param knight Knight
+     */
     synchronized void knightLeave(Knight knight){
         while(isKingInside()){
             try{
@@ -66,10 +76,15 @@ public class Hall {
         this.knightsInHall--;
         this.notifyAll();
     }
-//  这里的判断条件是： 当king在场时不能离开GH了
+
+    /**
+     * A Knight may enter the Great Hall if the King Arthur is not inside the Great Hall.
+     * If the King Arthur is inside the Great Hall, wait outside. If the Knight is holding a quest and the
+     * quest is not finished, cannot enter.
+     * @param knight
+     */
     synchronized void knightEnter(Knight knight){
-//        注意 当king在hall里面的时候 你已经无法进入了，必须等待。
-        while(isKingInside()){
+        while(isKingInside() || (knight.quest!=null&&!knight.quest.completed)){
             try{
                 wait();
             }catch (InterruptedException e){
@@ -80,27 +95,44 @@ public class Hall {
         System.out.println(knight.toString()+" enters"+this.toString());
         this.knightsInHall++;
         this.notifyAll();
-
-
     }
 
-//  这里的判断条件是： 当king在场时不能离开GH了.但是当knigh走到这里的时候已经进入到了GH。
-//    根据spec，当一个knight手上是空的话，他必须来拿quest，当他完成了quest也必须来交quest。不可能出现knight进来又走了的情况。
-//    From the spec:
-//    Having entered the GH, a Knight cannot leave without having acquired a new Quest.
-//    Having entered the GH, a Knight cannot leave without sitting at the Round Table.
+    /**
+     * A Knight may sit at the Round Table without limitation. (The Knight has entered the Great Hall with correct
+     * precondition). Mingling time applies to the Knight right after he sat down at the Round Table.
+     * @param knight
+     */
     synchronized void knightSit(Knight knight){
         System.out.println(knight.toString() + " sits at the Round Table");
         this.knightsSitTable++;
         this.notifyAll();
     }
 
+    /**
+     * A Knight may stand up from the Round Table after he got the quest.
+     * @param knight
+     */
     synchronized void knightStandup(Knight knight){
+        while(knight.quest==null){
+            try{
+                wait();
+            }catch (InterruptedException e){
+                e.printStackTrace();
+            }
+        }
         System.out.println(knight.toString()+" stands from the Round Table");
         this.knightsSitTable--;
         this.notifyAll();
     }
 
+    /**
+     * A method used by the King Arthur, to inform all Knights that the meeting starts.
+     * A boolean flag isMeetingStart is set to true.
+     * This method is especially important to indicate that the meeting has started, so Knights can release and
+     * acquire quests, based on the update of the boolean isMeetingStart.
+     * If the number of Knights that sit doesn't equal to the number of Knights that enters the Great Hall,
+     * the meeting cannot start.
+     */
     synchronized void meetingStart(){
         while(this.knightsSitTable != this.knightsInHall || !kingInside){
             try{
@@ -114,6 +146,10 @@ public class Hall {
         notifyAll();
     }
 
+    /**
+     * A method used by the King Arthur, to inform all Knights that the meeting ends.
+     * A boolean flag isMeetingStart is set to false. If no Knights are sitting, the meeting ends.
+     */
     synchronized void meetingEnd(){
         while(this.knightsSitTable!=0 || !kingInside){
             try{
@@ -127,21 +163,38 @@ public class Hall {
         notifyAll();
     }
 
-    synchronized void setOffQuest(Knight knight, Quest quest){
-        System.out.println(knight.toString()+" sets off to complete "+quest.toString());
+    /**
+     *  A Knight sets off for a quest.
+     * @param knight
+     */
+    synchronized void setOffQuest(Knight knight){
+        System.out.println(knight.toString()+" sets off to complete "+knight.quest.toString());
         notifyAll();
     }
 
+    /**
+     * A Knight finished a quest, after a questing time.
+     * @param knight Knight
+     * @param quest The quest that the Knight has just finished
+     */
     synchronized void questFinished(Knight knight, Quest quest){
-        while(quest.completed){
+        System.out.println(knight.toString()+" completes "+quest.toString());
+        quest.completed = true;
+        notifyAll();
+    }
+
+    /**
+     *  A blocking method that prevents a Knight releasing(when the Knight has sit down) a quest, when the meeting
+     *  is not started yet.
+     */
+    synchronized void duringMeeting(){
+        while(!this.isMeetingStart){
             try{
                 wait();
             }catch (InterruptedException e){
                 e.printStackTrace();
             }
         }
-        System.out.println(knight.toString()+" completes "+quest.toString());
-        quest.completed = true;
         notifyAll();
     }
 

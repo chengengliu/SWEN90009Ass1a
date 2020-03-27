@@ -1,4 +1,5 @@
 /**
+ * Name: Chengeng Liu   Student ID: 813174
  * Parameters for the questing knights simulator.
  *
  * @author ngeard@unimelb.edu.au
