@@ -41,7 +41,7 @@ public class Agenda {
             this.wait();
         }
 //        Initially quest will be null. This is to prevent from null pointer exception.
-        if(quest != null){
+        if(quest != null && quest.completed){
             this.quest = quest;
             System.out.println(knight.toString()+" releases "+quest.toString());
             this.notifyAll();
@@ -64,7 +64,9 @@ public class Agenda {
 
     @Override
     public String toString(){
-        return " added to "+this.tag;
+        if(this.tag.equals("New Agenda")) return " added to "+this.tag;
+        return " removed from "+this.tag;
+//        return " added to "+this.tag;
 
     }
 

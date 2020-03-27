@@ -5,7 +5,7 @@ public class Knight extends Thread{
     private Hall greatHall;
 
     private volatile boolean questFinished;
-    private Quest quest;
+    Quest quest;
 
 //    private boolean standing = true;
 //    private boolean insideHall = false;
@@ -26,7 +26,7 @@ public class Knight extends Thread{
 //                Not too sure if this time should be placed here?
 //                sleep(Params.getMinglingTime());
 //                Knight enters GH
-                this.greatHall.knightEnter(this.toString());
+                this.greatHall.knightEnter(this);
 //                Knight sits at the round table, after the mingling time. (as specified in the spec?)
 //                sleep(Params.getMinglingTime());
 
@@ -37,10 +37,10 @@ public class Knight extends Thread{
                 this.greatHall.duringMeeting();
 
 //                Knight release quest(if they have finished any).
-                this.greatHall.questRelease(this, this.quest);
+                agendaComplete.questRelease(this, this.quest);
 //                Acquire new quest. Make sure that it is now in the meeting.
 //                this.greatHall.duringMeeting();
-                this.greatHall.questAcquire(this);
+                this.quest =agendaNew.questAcquire(this);
 
 //                Stand up from the round table.
                 this.greatHall.knightStandup(this.toString());
@@ -50,9 +50,13 @@ public class Knight extends Thread{
 //                Knight leaves the Great Hall
                 this.greatHall.knightLeave(this.toString());
                 sleep(Params.getMinglingTime());
-//                During this period, quest has finished.
 
 //                Knight set off and trying to finish quest.
+                this.greatHall.setOffQuest(this, quest);
+//                It took time for the knight to complete the quest.
+                sleep(Params.getQuestingTime());
+//                Finally the quest has been finished
+                this.greatHall.questFinished(this, quest);
 
             }catch (InterruptedException e){
                 e.printStackTrace();

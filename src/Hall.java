@@ -33,16 +33,6 @@ public class Hall {
         }
     }
 
-    synchronized Quest questAcquire(Knight knight) throws InterruptedException{
-        Quest quest = agendaNew.questAcquire(knight);
-        notifyAll();
-        return quest;
-    }
-
-    synchronized void questRelease(Knight knight, Quest quest) throws InterruptedException{
-        agendaComplete.questRelease(knight, quest);
-        notifyAll();
-    }
 
     synchronized void kingArrive(String name) {
         this.kingInside = true;
@@ -79,7 +69,7 @@ public class Hall {
         this.notifyAll();
     }
 //  这里的判断条件是： 当king在场时不能离开GH了
-    synchronized void knightEnter(String name){
+    synchronized void knightEnter(Knight knight){
 //        注意 当king在hall里面的时候 你已经无法进入了，必须等待。
         while(isKingInside()){
             try{
@@ -88,9 +78,12 @@ public class Hall {
                 e.printStackTrace();
             }
         }
-        System.out.println(name+" enters"+this.toString());
+
+        System.out.println(knight.toString()+" enters"+this.toString());
         this.knightsInHall++;
         this.notifyAll();
+
+
     }
 
 //  这里的判断条件是： 当king在场时不能离开GH了.但是当knigh走到这里的时候已经进入到了GH。
@@ -136,8 +129,22 @@ public class Hall {
         notifyAll();
     }
 
-    synchronized void setOffQuest(Knight knight){
+    synchronized void setOffQuest(Knight knight, Quest quest){
+        System.out.println(knight.toString()+" sets off to complete "+quest.toString());
+        notifyAll();
+    }
 
+    synchronized void questFinished(Knight knight, Quest quest){
+        while(quest.completed){
+            try{
+                wait();
+            }catch (InterruptedException e){
+                e.printStackTrace();
+            }
+        }
+        System.out.println(knight.toString()+" completes "+quest.toString());
+        quest.completed = true;
+        notifyAll();
     }
 
     @Override
