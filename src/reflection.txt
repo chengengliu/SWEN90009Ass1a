@@ -1,0 +1,26 @@
+Name: Chengeng Liu      Student ID: 813174
+
+In this project, a concurrent system is simulated. One of the key points of the project is that, concurrent system
+will not execute the code sequentially. Code blocks will be executed by threads, which their execution order is hard
+to control. During the execution, each time the status of the object/system might change. It is important to have
+proper monitors implemented, to watch the status of the threads and notify any updates from the threads. A while loop is
+generally used in monitors, to keep checking the status of the thread, instead of using if condition.
+
+I assume that the capacity of both agendaNew and agendaComplete is 1. It is also possible to increase the number of
+agendas that the two monitors can hold. I have also assumed that both King Arthur and Knight execute indefinitely, as the
+program will execute indefinitely until it is terminated.
+
+I personally found it is a little hard at first to simulate the concurrent system. After I dig into the specification
+and try to figure out the key actions, everything becomes clearer. For example, two key threads, Knight and King Arthur,
+have their regular routine that can be simulated and put in a while loop. For Knight, they follow a series of action:
+Enter Hall, Sit at Round Table, Release Quest, Acquire Quest, Stand from Round Table, Exit Hall, Set off Quest, Complete
+Quest. The above actions will be repeated till the simulation is terminated. Great Hall is a good monitor and actions
+made by Knight and King Arthur can easily interact through the monitor. The change of status of the system is the
+condition of the while loop.
+
+One flaw of the system I found during the experiment of the simulation is that the King Arthur may hold a meeting with
+no Knights presented. This is a possible situation according to the specification. This cane be fixed, if adding one
+restriction on the King Arthur's action. The King Arthur will enter the Great Hall if there is at least one Knight
+presents in the Great Hall.
+
+Overall, the project gives me a new understanding of programming and how to model a concurrent system.

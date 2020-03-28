@@ -168,7 +168,7 @@ public class Hall {
      * @param knight
      */
     synchronized void setOffQuest(Knight knight){
-        System.out.println(knight.toString()+" sets off to complete "+knight.quest.toString());
+        System.out.println(knight.toString()+" sets off to complete "+knight.quest.toString()+"!");
         notifyAll();
     }
 
@@ -178,7 +178,7 @@ public class Hall {
      * @param quest The quest that the Knight has just finished
      */
     synchronized void questFinished(Knight knight, Quest quest){
-        System.out.println(knight.toString()+" completes "+quest.toString());
+        System.out.println(knight.toString()+" completes "+quest.toString()+"!");
         quest.completed = true;
         notifyAll();
     }
